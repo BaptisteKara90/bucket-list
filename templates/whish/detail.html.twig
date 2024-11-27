@@ -5,6 +5,11 @@
 {% endblock %}
 
 {% block body %}
-    <h1 class="title">Detail of a wish</h1>
+    <h1 class="title">Detail of {{ whish.title }}</h1>
+    <div class="container">
+        <p>Author : {{ whish.author }}</p>
+        <p>{{ whish.description }}</p>
+        <p> Created date : {{ whish.dateCreated | date("d-m-Y") }}</p>
+    </div>
 {% endblock %}
 

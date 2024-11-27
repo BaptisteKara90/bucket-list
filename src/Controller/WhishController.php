@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\WishRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -9,14 +10,20 @@ use Symfony\Component\Routing\Attribute\Route;
 class WhishController extends AbstractController
 {
     #[Route('', name: 'list', methods: ['GET'])]
-    public function list(): Response
+    public function list(WishRepository $wishRepository): Response
     {
-        return $this->render('whish/list.html.twig');
+        $whishes = $wishRepository->getWishesSortByDate();
+        return $this->render('whish/list.html.twig', [
+            'whishes' => $whishes
+        ]);
     }
 
     #[Route('/detail/{id}', name: 'detail', requirements: ['id'=>'\d+'], methods: ['GET'])]
-    public function detail($id): Response
+    public function detail( WishRepository $wishRepository,int $id ): Response
     {
-        return $this->render('whish/detail.html.twig');
+        $whish = $wishRepository->find($id);
+        return $this->render('whish/detail.html.twig', [
+            'whish' => $whish
+        ]);
     }
 }
