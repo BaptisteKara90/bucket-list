@@ -4,12 +4,10 @@
     <h1 class="title">List of Wish</h1>
 
     <div class="container">
-    {% for whish in whishes %}
-        {% if whish.publish %}
-        <a href="{{ path('whish_detail', {'id': whish.id}) }}">
-        <h4>{{ whish.title }}</h4>
+    {% for wish in wishes %}
+        <a href="{{ path('whish_detail', {'id': wish.id}) }}">
+        <h4>{{ wish.title }}</h4>
         </a>
-        {% endif %}
     {% endfor %}
     </div>
 

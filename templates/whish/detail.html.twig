@@ -5,11 +5,15 @@
 {% endblock %}
 
 {% block body %}
-    <h1 class="title">Detail of {{ whish.title }}</h1>
+    <h1 class="title">Detail of {{ wish.title }}</h1>
     <div class="container">
-        <p>Author : {{ whish.author }}</p>
-        <p>{{ whish.description }}</p>
-        <p> Created date : {{ whish.dateCreated | date("d-m-Y") }}</p>
+        <p>Author : {{ wish.author }}</p>
+        <p>{{ wish.description }}</p>
+        <p> Created date : {{ wish.dateCreated | date("d-m-Y") }}</p>
+    </div>
+    <div class="container">
+        <a class="bouton bouton-del" href="{{ path('whish_delete', {'id': wish.id}) }}">Delete</a>
+        <a class="bouton bouton-update" href="{{ path('whish_update', {'id': wish.id}) }}">Modify</a>
     </div>
 {% endblock %}
 

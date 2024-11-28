@@ -5,7 +5,8 @@ namespace App\Entity;
 use App\Repository\WishRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: WishRepository::class)]
 class Wish
 {
@@ -15,13 +16,16 @@ class Wish
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'this field cannot be blank')]
+    #[Assert\Length(min: 1, max: 255)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'this field cannot be blank')]
     private ?string $description = null;
 
-    #[ORM\Column]
-    private ?bool $isPublish = null;
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $isPublish = false;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateCreated = null;
@@ -61,12 +65,12 @@ class Wish
         return $this;
     }
 
-    public function isPublish(): ?bool
+    public function getIsPublish(): ?bool
     {
         return $this->isPublish;
     }
 
-    public function setPublish(bool $isPublish): static
+    public function setIsPublish(bool $isPublish): static
     {
         $this->isPublish = $isPublish;
 
@@ -107,5 +111,10 @@ class Wish
         $this->author = $author;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function saveWish(){
+        $this->setDateCreated(new \DateTime());
     }
 }

@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme wishForm 'views/form-theme.html.twig' %}
+
+{% block title%}
+    {{ parent() }} | Update a new wish
+{% endblock %}
+
+{% block body %}
+    <h1>Update a new wish</h1>
+
+    {{ form_start(wishForm) }}
+    {{ form_widget(wishForm) }}
+    <button>Update a wish</button>
+    {{ form_end(wishForm) }}
+{% endblock %}
+
