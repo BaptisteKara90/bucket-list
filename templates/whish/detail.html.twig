@@ -5,10 +5,11 @@
 {% endblock %}
 
 {% block body %}
-    <h1 class="title">Detail of {{ wish.title }}</h1>
+    <h1 class="title">{{ wish.title }}</h1>
     <div class="container">
         <p>Author : {{ wish.author }}</p>
         <p>{{ wish.description }}</p>
+        <p>Category : {{ wish.category.name }}</p>
         <p> Created date : {{ wish.dateCreated | date("d-m-Y") }}</p>
     </div>
     <div class="container">

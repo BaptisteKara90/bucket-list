@@ -36,6 +36,10 @@ class Wish
     #[ORM\Column(length: 255)]
     private ?string $author = null;
 
+    #[ORM\ManyToOne(inversedBy: 'wishes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -116,5 +120,17 @@ class Wish
     #[ORM\PrePersist]
     public function saveWish(){
         $this->setDateCreated(new \DateTime());
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
+        return $this;
     }
 }
