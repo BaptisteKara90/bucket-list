@@ -29,6 +29,7 @@ class WishType extends AbstractType
             ->add('Category', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'name',
+                'placeholder' => 'Select a category',
                 'query_builder' => function (CategoryRepository $categoryRepository) {
                     return $categoryRepository->createQueryBuilder('category')->orderBy('category.name');
                 }
