@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Commentary;
 use App\Entity\Wish;
+use App\Form\CommentType;
 use App\Form\WishType;
+use App\Repository\CommentaryRepository;
 use App\Repository\WishRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -11,6 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 #[Route('/whish', name: 'whish_')]
 class WhishController extends AbstractController
 {
@@ -23,11 +28,27 @@ class WhishController extends AbstractController
         ]);
     }
 
-    #[Route('/detail/{id}', name: 'detail', requirements: ['id'=>'\d+'], methods: ['GET'])]
-    public function detail(#[MapEntity] Wish $wish): Response
+    #[Route('/detail/{id}', name: 'detail', requirements: ['id'=>'\d+'])]
+    public function detail(#[MapEntity] Wish $wish, Request $request ,EntityManagerInterface $entityManager): Response
     {
+        $commentary = new Commentary();
+        $commentaries = $entityManager->getRepository(Commentary::class)->findBy(['wish' => $wish]);
+        $commentForm = $this->createForm(CommentType::class, $commentary);
+        $commentForm->handleRequest($request);
+        if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+            $commentary->setWish($wish);
+            $commentary->setUser($this->getUser());
+            $commentary->setDateCreated(new \DateTime());
+            $entityManager->persist($commentary);
+            $entityManager->flush();
+            $this->addFlash('success', 'Commentary was added successfully!');
+            return $this->redirectToRoute('whish_detail', ['id' => $wish->getId()]);
+        }
+
         return $this->render('whish/detail.html.twig', [
-            'wish' => $wish
+            'wish' => $wish,
+            'commentForm' => $commentForm,
+            'commentaries' => $commentaries
         ]);
     }
     #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
@@ -36,6 +57,7 @@ class WhishController extends AbstractController
         $wishForm = $this->createForm(WishType::class, $wish);
         $wishForm->handleRequest($request);
         if ($wishForm->isSubmitted() && $wishForm->isValid()) {
+            $wish->setAuthor($this->getUser()->getUsername());
             $entityManager->persist($wish);
             $entityManager->flush();
             $this->addFlash('success', 'the wish has been created.');
@@ -47,6 +69,7 @@ class WhishController extends AbstractController
         ]);
     }
     #[Route('/update/{id}', name: 'update', requirements: ['id'=>'\d+'])]
+    #[isGranted('ROLE_USER')]
     public function update(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Wish $wish): Response {
            $wishForm = $this->createForm(WishType::class, $wish);
            $wishForm->handleRequest($request);
@@ -62,6 +85,7 @@ class WhishController extends AbstractController
            ]);
     }
     #[Route('/delete/{id}', name: 'delete', requirements: ['id'=>'\d+'], methods: ['GET'])]
+    #[isGranted('ROLE_USER', 'ROLE_ADMIN')]
     public function delete(Wish $wish, EntityManagerInterface $entityManager): Response {
         $entityManager->remove($wish);
         $entityManager->flush();

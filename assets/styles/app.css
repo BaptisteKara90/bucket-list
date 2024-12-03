@@ -1,7 +1,7 @@
 body {
     background-color: #e4d3d3;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .text{
@@ -30,6 +30,10 @@ h1 {
 /* Conteneur pour chaque champ */
 form div {
     margin-bottom: 15px;
+}
+
+.flex_div{
+    margin: 20px 0;
 }
 
 /* Style des étiquettes */

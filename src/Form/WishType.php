@@ -20,7 +20,6 @@ class WishType extends AbstractType
     {
         $builder
             ->add('title')
-            ->add('author')
             ->add('description', TextareaType::class)
             ->add('isPublish', CheckboxType::class, [
                 'required' => false,

@@ -12,9 +12,51 @@
         <p>Category : {{ wish.category.name }}</p>
         <p> Created date : {{ wish.dateCreated | date("d-m-Y") }}</p>
     </div>
-    <div class="container">
-        <a class="bouton bouton-del" href="{{ path('whish_delete', {'id': wish.id}) }}">Delete</a>
-        <a class="bouton bouton-update" href="{{ path('whish_update', {'id': wish.id}) }}">Modify</a>
+    {% if app.user and (app.user.username is same as wish.author or is_granted('ROLE_ADMIN')) %}
+        <div class="container">
+            {% if app.user.username is same as wish.author %}
+                <a class="bouton bouton-update" href="{{ path('whish_update', {'id': wish.id}) }}">Modify</a>
+            {% endif %}
+            <a class="bouton bouton-del" href="{{ path('whish_delete', {'id': wish.id}) }}">Delete</a>
+        </div>
+    {% endif %}
+    {% if commentaries %}
+        <div>
+            <h5 class="title">Comments :</h5>
+            {% for commentary in commentaries %}
+                <div>
+                    <p class="title">Created by {{ commentary.user.username }}
+                        on {{ commentary.dateCreated | date('d-m-Y') }}</p>
+                    <p class="title">{{ commentary.commentary }}</p>
+                    <div class="title">
+                        {% for i in 1..5 %}
+                            {% if i <= commentary.rate %}
+                                <span>&#9733;</span>
+                            {% else %}
+                                <span>&#9734;</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {% if app.user and commentary.user.username is same as app.user.username %}
+                            <div class="flex_div title">
+                                <a href="{{ path('commentary_delete', {'id': commentary.id}) }}" class="bouton bouton-del">Delete</a>
+                                <a href="{{ path('commentary_update', {'id': commentary.id}) }}" class="bouton bouton-update">Update</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if app.user %}
+    <div>
+        <h5 class="title">New Commentary</h5>
+        {{ form_start(commentForm) }}
+        {{ form_widget(commentForm) }}
+        <button>Send a comment</button>
+        {{ form_end(commentForm) }}
     </div>
+    {% endif %}
 {% endblock %}
 
