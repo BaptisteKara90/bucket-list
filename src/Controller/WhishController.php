@@ -71,6 +71,7 @@ class WhishController extends AbstractController
     #[Route('/update/{id}', name: 'update', requirements: ['id'=>'\d+'])]
     #[isGranted('ROLE_USER')]
     public function update(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Wish $wish): Response {
+        if($wish->getAuthor() == $this->getUser()->getUsername()){
            $wishForm = $this->createForm(WishType::class, $wish);
            $wishForm->handleRequest($request);
            if ($wishForm->isSubmitted() && $wishForm->isValid()) {
@@ -83,6 +84,10 @@ class WhishController extends AbstractController
            return $this->render('whish/update.html.twig', [
                'wishForm' => $wishForm,
            ]);
+        }else{
+            $this->addFlash('error', 'You can\'t update this wish.');
+            return $this->redirectToRoute('whish_detail', ['id' => $wish->getId()]);
+        }
     }
     #[Route('/delete/{id}', name: 'delete', requirements: ['id'=>'\d+'], methods: ['GET'])]
     #[isGranted('ROLE_USER', 'ROLE_ADMIN')]
