@@ -6,6 +6,7 @@ use App\Entity\Commentary;
 use App\Entity\Wish;
 use App\Form\CommentType;
 use App\Form\WishType;
+use App\Helpers\Censurator;
 use App\Repository\CommentaryRepository;
 use App\Repository\WishRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -52,12 +53,16 @@ class WhishController extends AbstractController
         ]);
     }
     #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
-    public function add(Request $request, EntityManagerInterface $entityManager) : Response {
+    public function add(Request $request, EntityManagerInterface $entityManager,Censurator $censurator) : Response {
         $wish = new Wish();
         $wishForm = $this->createForm(WishType::class, $wish);
         $wishForm->handleRequest($request);
         if ($wishForm->isSubmitted() && $wishForm->isValid()) {
             $wish->setAuthor($this->getUser()->getUsername());
+            $wishCensoredTitle = $censurator->purify($wish->getTitle());
+            $wish->setTitle($wishCensoredTitle);
+            $wishCensoredDesc = $censurator->purify($wish->getDescription());
+            $wish->setDescription($wishCensoredDesc);
             $entityManager->persist($wish);
             $entityManager->flush();
             $this->addFlash('success', 'the wish has been created.');
@@ -90,7 +95,7 @@ class WhishController extends AbstractController
         }
     }
     #[Route('/delete/{id}', name: 'delete', requirements: ['id'=>'\d+'], methods: ['GET'])]
-    #[isGranted('ROLE_USER', 'ROLE_ADMIN')]
+    #[isGranted('ROLE_ADMIN')]
     public function delete(Wish $wish, EntityManagerInterface $entityManager): Response {
         $entityManager->remove($wish);
         $entityManager->flush();
