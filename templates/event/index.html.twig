@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+
+
+{% block body %}
+    <h2 class="title">Event List</h2>
+
+    {{ dump(data.results) }}
+    <div>
+        <div>
+            {{ form(searchEventForm) }}
+        </div>
+        {% for event in data.results %}
+        <div class="flex margin-inline">
+            <div class="flex">
+               <div class="margin-inline">{{ event.firstdate_begin | date('d-m-Y') }}</div>
+                <img src="{{ event.thumbnail }}" alt="">
+            </div>
+            <div class="flex_div margin-inline">
+                <h4 class="margin-inline">{{ event.title_fr }}</h4>
+                <p class="margin-inline">{{ event.location_address }}</p>
+                <p class="margin-inline">{{ event.description_fr }}</p>
+                <a class="margin-inline" href="{{ event.canonicalurl }}">Lien de l'event</a>
+            </div>
+        </div>
+            {% else %}
+            <h4 class="title">No Event</h4>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+
